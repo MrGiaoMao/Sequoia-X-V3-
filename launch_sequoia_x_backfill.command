@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-PROJECT_DIR="/Users/tonnymaoyilin/Documents/量化交易/Sequoia-X"
+PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 cd "$PROJECT_DIR" || {
   echo "Failed to enter project directory:"

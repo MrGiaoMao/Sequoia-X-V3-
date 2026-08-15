@@ -161,7 +161,7 @@ cp .env.example .env
 ```env
 FEISHU_WEBHOOK_URL=https://open.feishu.cn/open-apis/bot/v2/hook/xxx   # 必填
 STRATEGY_WEBHOOK_MA_VOLUME=https://open.feishu.cn/open-apis/bot/v2/hook/xxx   # 可选
-REPORT_OUTPUT_DIR=/path/to/reports   # 可选，默认 ~/Documents/量化交易/今日选股结果
+REPORT_OUTPUT_DIR=/path/to/reports   # 可选
 ```
 
 为降低 baostock 限流风险，默认启用 2 进程（1~4 可调）并在每个进程的请求之间加入随机等待：
@@ -191,7 +191,7 @@ python main.py
 建议配合 crontab 每个交易日收盘后自动执行：
 
 ```cron
-15 19 * * 1-5 cd "/Users/tonnymaoyilin/Documents/量化交易/Sequoia-X" && .venv/bin/python main.py >> log.txt 2>&1
+15 19 * * 1-5 cd "$HOME/Sequoia-X" && .venv/bin/python main.py >> log.txt 2>&1
 ```
 
 ---
