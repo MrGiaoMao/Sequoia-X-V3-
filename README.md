@@ -1,6 +1,8 @@
 # Sequoia-X V3: 王者回归 | The King Returns
 
 > A 股量化选股系统 V3 | A-Share Quantitative Stock Selection System V3
+>
+> **English version**: [README_EN.md](./README_EN.md)
 
 ---
 
