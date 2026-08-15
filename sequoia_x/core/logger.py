@@ -1,6 +1,7 @@
 """日志模块：基于 rich 库提供带颜色的结构化终端日志输出。"""
 
 import logging
+
 from rich.logging import RichHandler
 
 _FORMAT = "%(name)s - %(message)s"

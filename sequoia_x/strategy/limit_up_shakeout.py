@@ -1,6 +1,5 @@
 """涨停洗盘策略：昨日涨停后今日放量收阴但不破昨收。"""
 
-import pandas as pd
 
 from sequoia_x.core.logger import get_logger
 from sequoia_x.strategy.base import BaseStrategy
@@ -31,12 +30,13 @@ class LimitUpShakeoutStrategy(BaseStrategy):
         Returns:
             满足条件的股票代码列表。
         """
-        symbols = self.engine.get_local_symbols()
+        all_data = self.engine.load_all_ohlcv()
+        if not all_data:
+            return []
         selected: list[str] = []
 
-        for symbol in symbols:
+        for symbol, df in all_data.items():
             try:
-                df = self.engine.get_ohlcv(symbol)
                 if len(df) < self._MIN_BARS:
                     continue
 

@@ -4,6 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
+.DS_Store
 
 # 虚拟环境
 venv/
@@ -36,3 +37,10 @@ build/
 
 # Hypothesis 测试缓存
 .hypothesis/
+
+# 本地助手与工具缓存
+.kunsdd/
+*.Rhistory
+
+# 本地回测数据（不上传）
+回测数据

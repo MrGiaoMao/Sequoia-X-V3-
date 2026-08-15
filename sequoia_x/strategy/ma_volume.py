@@ -1,6 +1,5 @@
 """均线+成交量选股策略：5日均线上穿20日均线且成交量放大。"""
 
-import pandas as pd
 
 from sequoia_x.core.logger import get_logger
 from sequoia_x.strategy.base import BaseStrategy
@@ -28,12 +27,13 @@ class MaVolumeStrategy(BaseStrategy):
         Returns:
             满足条件的股票代码列表。
         """
-        symbols = self.engine.get_local_symbols()
+        all_data = self.engine.load_all_ohlcv()
+        if not all_data:
+            return []
         selected: list[str] = []
 
-        for symbol in symbols:
+        for symbol, df in all_data.items():
             try:
-                df = self.engine.get_ohlcv(symbol)
                 if len(df) < 20:
                     continue
 

@@ -14,7 +14,8 @@ class TurtleTradeStrategy(BaseStrategy):
     选股条件（向量化，严禁 iterrows）：
     1. 突破新高：今日 close > 前20个交易日 high 的最大值
     2. 流动性：今日 turnover > 100,000,000
-    3. 防诱多过滤：今日必须是实体阳线（今日 close > 今日 open），且必须真涨（今日 close > 昨日 close）
+    3. 防诱多过滤：今日必须是实体阳线（今日 close > 今日 open），
+       且必须真涨（今日 close > 昨日 close）
 
     Attributes:
         webhook_key: 路由到 'turtle' 专属飞书机器人。
@@ -40,25 +41,33 @@ class TurtleTradeStrategy(BaseStrategy):
         try:
             for symbol in symbols:
                 bs_code = self.engine._to_baostock_code(symbol)
-                rs = bs.query_history_k_data_plus(
-                    bs_code,
-                    "close,volume,turn",
-                    start_date=today_str,
-                    end_date=today_str,
-                    frequency="d",
-                    adjustflag="3",  # 不复权，真实价格
-                )
-                while rs.next():
-                    row = rs.get_row_data()
-                    try:
-                        close = float(row[0])
-                        volume = float(row[1])
-                        turn = float(row[2])
-                        if turn > 0:
-                            circulating_shares = volume / (turn / 100)
-                            market_caps[symbol] = circulating_shares * close
-                    except (ValueError, ZeroDivisionError):
+                try:
+                    rs = bs.query_history_k_data_plus(
+                        bs_code,
+                        "close,volume,turn",
+                        start_date=today_str,
+                        end_date=today_str,
+                        frequency="d",
+                        adjustflag="3",  # 不复权，真实价格
+                    )
+                    if rs.error_code != "0":
+                        logger.warning(
+                            f"[{symbol}] baostock 流通市值查询失败: {rs.error_msg}"
+                        )
                         continue
+                    while rs.next():
+                        row = rs.get_row_data()
+                        try:
+                            close = float(row[0])
+                            volume = float(row[1])
+                            turn = float(row[2])
+                            if turn > 0:
+                                circulating_shares = volume / (turn / 100)
+                                market_caps[symbol] = circulating_shares * close
+                        except (ValueError, ZeroDivisionError):
+                            continue
+                finally:
+                    self.engine.pause_between_baostock_requests()
         finally:
             bs.logout()
 
@@ -68,12 +77,13 @@ class TurtleTradeStrategy(BaseStrategy):
         """
         遍历全市场，返回满足海龟突破条件的股票代码列表。
         """
-        symbols = self.engine.get_local_symbols()
+        all_data = self.engine.load_all_ohlcv()
+        if not all_data:
+            return []
         candidates: list[str] = []
 
-        for symbol in symbols:
+        for symbol, df in all_data.items():
             try:
-                df = self.engine.get_ohlcv(symbol)
                 if len(df) < self._MIN_BARS:
                     continue
 

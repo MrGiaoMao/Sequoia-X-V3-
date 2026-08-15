@@ -9,6 +9,7 @@ dependencies = [
     "python-dotenv>=1.0",
     "rich>=13.0",
     "pandas>=2.0",
+    "numpy>=1.26",
     "requests>=2.31",
 ]
 
@@ -17,11 +18,17 @@ dev = [
     "pytest>=8.0",
     "hypothesis>=6.100",
     "pytest-mock>=3.12",
+    "ruff>=0.8",
 ]
+
+[tool.setuptools.packages.find]
+include = ["sequoia_x*"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+
+[tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
 
 [tool.pytest.ini_options]
